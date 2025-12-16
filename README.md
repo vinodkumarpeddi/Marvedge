@@ -14,7 +14,14 @@ This project showcases **browser media APIs**, **client-side FFmpeg processing**
 
 ## 🗄️ Storage & Deployment Notes (Important)
 
-This project **intentionally uses mocked local storage**, which is explicitly allowed by the assignment.
+ClipCast **intentionally uses a mocked storage layer**. This is a **deliberate MVP design choice**, not a technical limitation, and is explicitly allowed by the assignment.
+
+### 🧪 Why Mocked Storage?
+
+* Keeps the project **fully self-contained and easy to run**
+* Avoids requiring cloud credentials (S3 / R2)
+* Preserves the **same API contract** as real object storage
+* Allows realistic upload → share → watch flows
 
 ### 🧪 Local Development
 
@@ -23,7 +30,7 @@ This project **intentionally uses mocked local storage**, which is explicitly al
   ```
   /public/uploads
   ```
-* This demonstrates the **full flow**:
+* This demonstrates the **complete product flow**:
   **record → upload → share → watch → analytics**
 
 ### ☁️ Serverless Deployment (Vercel)
@@ -33,20 +40,17 @@ Serverless platforms like Vercel have an **ephemeral filesystem** by design.
 To handle this correctly:
 
 * The upload API **detects the serverless environment**
-* Returns a **mocked success response** with a valid share link
-* Keeps the **API contract identical** to real object storage (S3 / R2)
+* Returns a **mocked success response** with a valid shareable link
+* Keeps the **API contract identical** to S3 / Cloudflare R2
 
-### ✅ Why This Approach Works
+### ✅ Why This Scales
 
-* Deployment-safe MVP
-* Cloud-ready architecture
-* Minimal changes needed to migrate to:
+* Frontend and APIs are **storage-agnostic**
+* Storage is abstracted behind a service boundary
+* Replacing mocked storage with **S3 / Cloudflare R2** requires minimal code changes
+* No frontend refactor needed
 
-  * AWS S3
-  * Cloudflare R2
-  * Any object storage
-
-> In production, this mocked layer would be replaced without changing frontend or API consumers.
+➡️ In production, this mocked layer would be replaced with real object storage **without changing API consumers**.
 
 ---
 
@@ -137,13 +141,58 @@ Watch percentage updates when:
 
 ## 🚀 What I’d Improve for Production
 
-* Replace local storage with **S3 / Cloudflare R2**
-* Use a real database (**Postgres / DynamoDB**)
-* Add authentication & video ownership
-* Video transcoding (MP4, adaptive streaming)
-* Background jobs for analytics
-* Rate limiting & abuse protection
-* WebSockets for real-time analytics
+If ClipCast were taken beyond MVP into a real production system, here’s how I would evolve it:
+
+### ☁️ Scalable Storage & Media Delivery
+
+* Replace mocked local storage with **AWS S3 / Cloudflare R2**
+* Serve videos via **CDN-backed signed URLs**
+* Enable lifecycle policies for cost-efficient storage
+
+### 🗄️ Robust Data Layer
+
+* Replace file-based persistence with a real database:
+
+  * **Postgres** (relational analytics, ownership)
+  * or **DynamoDB** (high-scale event tracking)
+* Normalize analytics data for faster aggregation
+
+### 🔐 Authentication & Ownership
+
+* User authentication (email / OAuth)
+* Video ownership & private links
+* Permissions for delete / regenerate links
+
+### 🎞️ Video Processing Pipeline
+
+* Server-side transcoding to **MP4 / HLS**
+* Adaptive streaming for different bandwidths
+* Thumbnail generation & previews
+
+### ⚙️ Background Jobs & Analytics
+
+* Queue-based processing (BullMQ / SQS)
+* Batch analytics aggregation
+* Event-based watch tracking
+
+### 🛡️ Security & Abuse Protection
+
+* Rate limiting on upload & watch APIs
+* File size & duration limits
+* Basic DRM / tokenized access
+
+### 📡 Real-Time Analytics
+
+* WebSockets / SSE for live view updates
+* Real-time watch progress dashboards
+
+### 🧪 Observability & Reliability
+
+* Structured logging
+* Error tracking (Sentry)
+* Metrics & monitoring
+
+➡️ The current MVP architecture is intentionally designed so **each of these upgrades can be added incrementally without rewrites**.
 
 ---
 
