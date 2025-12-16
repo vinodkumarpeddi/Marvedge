@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+}
+
+model Video {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  url       String
+  views     Int      @default(0)
+  createdAt DateTime @default(now())
+  analytics Analytics[]
+}
+
+model Analytics {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  videoId    String   @db.ObjectId
+  completion Float
+  createdAt  DateTime @default(now())
+
+  video Video @relation(fields: [videoId], references: [id])
+}
