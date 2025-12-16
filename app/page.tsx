@@ -96,8 +96,15 @@ export default function Home() {
     formData.append("video", blob, "video.webm");
 
     const res = await fetch("/api/upload", { method: "POST", body: formData });
+    if (!res.ok) {
+      alert("Upload failed. Please try again.");
+      setIsUploading(false);
+      return;
+    }
+
     const data = await res.json();
     setShareLink(data.shareUrl);
+
 
     setIsUploading(false);
   };
