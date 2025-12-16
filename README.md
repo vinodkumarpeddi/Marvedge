@@ -4,8 +4,32 @@ ClipCast is a lightweight MVP that allows users to record their screen + microph
 This project demonstrates browser media handling, FFmpeg processing, backend APIs, and product-focused UX decisions.
 🎥 Demo
 Live Demo:
+https://clipclash-marvedge.vercel.app/
 
-(Provide Vercel link)
+🗄️ Storage & Deployment Note (Important)
+This project intentionally uses mocked local storage, which is explicitly allowed by the assignment.
+
+During local development, uploaded videos are written to the local filesystem (/public/uploads) to demonstrate the full upload → share → watch flow.
+
+When deployed to serverless platforms like Vercel, the filesystem is ephemeral by design.
+To handle this correctly:
+
+The upload API detects the serverless environment
+
+Returns a mocked success response with a valid share link
+
+Keeps the API contract identical to a real object storage service (S3 / R2)
+
+This approach ensures:
+
+The MVP remains deployment-safe
+
+The architecture is cloud-ready
+
+Migrating to real object storage requires minimal code changes
+
+In a production environment, this mocked storage layer would be replaced with S3, Cloudflare R2, or similar, without changing frontend or API consumers.
+
 ⚙️ Setup Instructions
 1️⃣ Clone the repository
 git clone https://github.com/your-username/clipcast.git
