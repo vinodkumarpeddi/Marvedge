@@ -1,337 +1,294 @@
-🎥 ClipCast – In-Browser Screen Recorder & Sharing
-ClipCast is a lightweight MVP that allows users to record their screen + microphone directly in the browser, trim recordings, upload videos, and share a public link with real-time analytics such as unique views and watch-completion percentage.
+# 🎥 ClipCast – In-Browser Screen Recorder & Sharing
 
-This project demonstrates browser media handling, FFmpeg processing, backend APIs, and product-focused UX decisions.
-🎥 Demo
-Live Demo:
-https://clipclash-marvedge.vercel.app/
+**ClipCast** is a lightweight, production-minded MVP that lets users **record their screen + microphone directly in the browser**, **trim recordings**, **upload videos**, and **share a public link** with **real-time analytics** such as **unique views** and **watch-completion percentage**.
 
-🗄️ Storage & Deployment Note (Important)
+This project showcases **browser media APIs**, **client-side FFmpeg processing**, **backend API design**, and **product-focused UX decisions** — built the way an early-stage startup MVP should be.
 
-This project intentionally uses mocked local storage, which is explicitly allowed by the assignment.
+---
 
-During local development, uploaded videos are written to the local filesystem (/public/uploads) to demonstrate the full upload → share → watch flow.
+## 🚀 Live Demo
 
-When deployed to serverless platforms like Vercel, the filesystem is ephemeral by design.
+👉 **[https://clipclash-marvedge.vercel.app/](https://clipclash-marvedge.vercel.app/)**
+
+---
+
+## 🗄️ Storage & Deployment Notes (Important)
+
+This project **intentionally uses mocked local storage**, which is explicitly allowed by the assignment.
+
+### 🧪 Local Development
+
+* Uploaded videos are written to:
+
+  ```
+  /public/uploads
+  ```
+* This demonstrates the **full flow**:
+  **record → upload → share → watch → analytics**
+
+### ☁️ Serverless Deployment (Vercel)
+
+Serverless platforms like Vercel have an **ephemeral filesystem** by design.
+
 To handle this correctly:
 
-The upload API detects the serverless environment
+* The upload API **detects the serverless environment**
+* Returns a **mocked success response** with a valid share link
+* Keeps the **API contract identical** to real object storage (S3 / R2)
 
-Returns a mocked success response with a valid share link
+### ✅ Why This Approach Works
 
-Keeps the API contract identical to a real object storage service (S3 / R2)
+* Deployment-safe MVP
+* Cloud-ready architecture
+* Minimal changes needed to migrate to:
 
-This approach ensures:
+  * AWS S3
+  * Cloudflare R2
+  * Any object storage
 
-The MVP remains deployment-safe
+> In production, this mocked layer would be replaced without changing frontend or API consumers.
 
-The architecture is cloud-ready
+---
 
-Migrating to real object storage requires minimal code changes
+## ⚙️ Setup Instructions
 
-In a production environment, this mocked storage layer would be replaced with S3, Cloudflare R2, or similar, without changing frontend or API consumers.
+### 1️⃣ Clone the Repository
 
-⚙️ Setup Instructions
-
-1️⃣ Clone the repository
+```bash
 git clone https://github.com/your-username/clipcast.git
-
 cd clipcast
+```
 
-2️⃣ Install dependencies
+### 2️⃣ Install Dependencies
+
+```bash
 npm install
+```
 
-3️⃣ Run the development server
+### 3️⃣ Run the Development Server
+
+```bash
 npm run dev
+```
+
 Open:
-👉 http://localhost:3000
+👉 **[http://localhost:3000](http://localhost:3000)**
 
-🔗 How Sharing Works
-Record or trim a video
+---
 
-Upload the video
+## 🔗 How Sharing Works
 
-A public URL is generated:
+1. Record or trim a video
+2. Upload the video
+3. A public URL is generated:
 
-/watch/{video-id}
-Anyone with the link can view the video
+   ```
+   /watch/{video-id}
+   ```
+4. Anyone with the link can watch
+5. Analytics update automatically
 
-Analytics update automatically
+---
 
-📊 Analytics Design
-Each viewer gets an anonymous persistent cookie
+## 📊 Analytics Design
 
-Views are counted only once per user
+### 👤 Viewer Identity
 
-Reloading the page does not increase views
+* Each viewer gets an **anonymous persistent cookie**
+* Views are counted **once per user**
+* Reloading does **not** inflate views
 
-Watch percentage is updated when:
+### ⏱ Watch Percentage Tracking
 
-Video is paused
+Watch percentage updates when:
 
-Video finishes
+* Video is paused
+* Video finishes
 
-Backend calculates:
+### 🧮 Backend Calculates
 
-Total views
+* Total unique views
+* Average watch percentage
+* Per-user watch percentage
 
-Average watch percentage
+---
 
-Per-user watch percentage
+## 🧠 Architecture Decisions
 
-🧠 Architecture Decisions
-Why client-side FFmpeg?
-No backend compute cost
+### 🎬 Why Client-Side FFmpeg?
 
-Faster iteration for MVP
+* No backend compute cost
+* Faster iteration for MVP
+* Avoids server-side video processing complexity
 
-Avoids server video processing complexity
+### 📁 Why File-Based Analytics?
 
-Why file-based analytics?
-Simple, transparent persistence
+* Simple & transparent persistence
+* Easy DB replacement later
+* Perfect for MVP & assignment scope
 
-Easy to replace with DB later
+### ☁️ Why Local Storage Instead of S3?
 
-Ideal for MVP & assignment scope
+* No cloud account required
+* Same API surface as S3 / R2
+* Easy future migration
 
-Why local storage instead of S3?
-No cloud account required
+---
 
-Same API surface as S3/R2
+## 🚀 What I’d Improve for Production
 
-Easy future migration
+* Replace local storage with **S3 / Cloudflare R2**
+* Use a real database (**Postgres / DynamoDB**)
+* Add authentication & video ownership
+* Video transcoding (MP4, adaptive streaming)
+* Background jobs for analytics
+* Rate limiting & abuse protection
+* WebSockets for real-time analytics
 
-🚀 What I Would Improve for Production
-Replace local storage with S3 / R2
+---
 
-Use a real database (Postgres / DynamoDB)
+## ✨ Features
 
-Add authentication & ownership
+### 🎬 Screen Recording
 
-Video transcoding (mp4, adaptive streaming)
+* Record screen + microphone (MediaRecorder API)
+* Start / Stop controls
+* Output saved as **.webm**
 
-Background jobs for analytics
+### ✂️ Video Trimming
 
-Rate-limiting & abuse protection
+* Trim via start & end timestamps
+* Client-side trimming using **ffmpeg.wasm**
+* Preview before upload
 
-WebSockets for real-time analytics updates
+### ⬆️ Upload & Share
 
+* Upload full or trimmed video
+* Generates a public shareable link
+* Public watch page with embedded player
 
-✨ Features
-🎬 Screen Recording
-Record screen + microphone using the MediaRecorder API
+### 📊 Persistent Analytics
 
-Start / Stop controls
+* Unique view tracking
+* Prevents reload-based inflation
+* Watch completion percentage
+* Displays:
 
-Output saved as .webm
+  * Total views
+  * Average watch %
+  * Current user’s watch %
 
-✂️ Video Trimming
-Trim video using start & end timestamps
+### 🎨 Product-Quality UI
 
-Client-side trimming via ffmpeg.wasm
+* Clean, responsive design
+* Recording / trimming / uploading states
+* Disabled controls to prevent invalid actions
+* Visual feedback for async operations
 
-Preview trimmed output before upload
+---
 
-⬆️ Upload & Share
-Upload full or trimmed video
+## 🧱 Tech Stack
 
-Generates a public shareable link
+| Layer      | Technology                       |
+| ---------- | -------------------------------- |
+| Frontend   | Next.js (App Router), TypeScript |
+| Styling    | Tailwind CSS                     |
+| Video      | MediaRecorder API, FFmpeg WASM   |
+| Backend    | Next.js Route Handlers           |
+| Storage    | Local file storage (mocked S3)   |
+| Analytics  | File-based JSON persistence      |
+| Deployment | Local / Vercel-ready             |
 
-Public watch page with embedded video player
+---
 
-📊 Analytics (Persistent)
-Unique view tracking (per user)
+## 🗂 Project Structure
 
-Prevents view inflation on reload
-
-Tracks watch completion percentage
-
-Shows:
-
-Total views
-
-Average watch percentage
-
-Current user’s watch percentage
-
-🎨 Product-Quality UI
-Clean, responsive UI
-
-Recording / trimming / uploading states
-
-Disabled controls to prevent invalid actions
-
-Visual feedback for all async operations
-
-🧱 Tech Stack
-Layer	Tech
-Frontend	Next.js (App Router), TypeScript
-Styling	Tailwind CSS
-Video	MediaRecorder API, FFmpeg WASM
-Backend	Next.js Route Handlers
-Storage	Local file storage (mocked S3)
-Analytics	File-based JSON persistence
-Deployment	Local / Vercel-ready
-🗂 Project Structure
+```text
 clipcast/
 ├── app/
-│   ├── page.tsx              # Recorder, trim & upload UI
-│   ├── watch/[id]/page.tsx   # Public watch page
+│   ├── page.tsx                # Recorder, trim & upload UI
+│   ├── watch/[id]/page.tsx     # Public watch page
 │   ├── api/
-│   │   ├── upload/route.ts   # Upload handler
-│   │   └── analytics/route.ts# View & watch analytics
+│   │   ├── upload/route.ts     # Upload handler
+│   │   └── analytics/route.ts  # View & watch analytics
 ├── public/
-│   └── uploads/              # Stored videos
+│   └── uploads/                # Stored videos
 ├── data/
-│   └── analytics.json        # Persistent analytics
+│   └── analytics.json          # Persistent analytics
 └── README.md
+```
 
-👨‍💻 What I Built
-I built ClipCast, a fully functional MVP that enables users to:
+---
 
-Record their screen + microphone directly in the browser
+## 🧠 What Makes This Implementation Different
 
-Trim recorded videos before upload
+### 1️⃣ True Unique View Tracking
 
-Upload videos and generate public shareable links
+❌ Increment views on every page load
+✅ Count **one view per unique user**, reload-safe
+➡️ Mirrors real platforms like Loom & YouTube
 
-View shared videos on a public watch page
+### 2️⃣ Per-User Watch Completion Percentage
 
-Track real, persistent analytics:
+❌ Binary completed / not completed
+✅ Track **exact watch percentage per viewer**
+➡️ Real engagement insights, not vanity metrics
 
-Unique views
+### 3️⃣ Client-Side Video Processing
 
-Average watch completion percentage
+❌ Heavy server-side processing
+✅ FFmpeg runs entirely in the browser
+➡️ Lower server cost, faster UX
 
-Individual viewer watch percentage
+### 4️⃣ Production-Quality UX
 
-This project focuses on building a realistic slice of a startup MVP, not just a demo.
+* Recording indicators (● Recording)
+* Disabled buttons during async actions
+* Progress feedback
+* Clean reset flows
 
-🧠 What Makes This Implementation Different
-Most solutions stop at record → upload.
-This project goes significantly deeper.
+➡️ These details matter in real products.
 
-1️⃣ True Unique View Tracking (Not Fake Counters)
-❌ Common approach:
+### 5️⃣ Thoughtful Backend Design
 
-Increment views on every page load
+* Production-style API routes
+* DB-replaceable persistence layer
+* S3-style storage abstraction
+* Clean separation of concerns
 
-Refreshing increases views artificially
+---
 
-✅ My approach:
+## 🧱 Technical Highlights
 
-Each user gets a persistent anonymous ID
+* Next.js App Router architecture
+* MediaRecorder API for capture
+* FFmpeg WASM for trimming
+* Persistent server-side analytics
+* Cookie-based anonymous identity
+* Fully typed TypeScript codebase
+* Clean Tailwind CSS UI
 
-Views increase only once per user
+---
 
-Page reloads do not inflate analytics
+## 🚀 Why This Matters
 
-➡️ This mirrors how real platforms like Loom or YouTube work.
+This project demonstrates my ability to:
 
-2️⃣ Per-User Watch Completion Percentage
-❌ Common approach:
+* Build real browser-based video features
+* Make smart architectural tradeoffs
+* Think beyond **“it works”** → **“it scales”**
+* Deliver a polished MVP experience
+* Own both frontend and backend systems
 
-Only track “completed” or “not completed”
+It reflects how I’d build an **early-stage startup product**, not just complete a task.
 
-✅ My approach:
+---
 
-Track how much of the video each user watched
+## 👤 Author
 
-Persist watch percentage per user
-
-Calculate:
-
-Individual watch %
-
-Average watch % across all viewers
-
-➡️ This provides real engagement insights, not vanity metrics.
-
-3️⃣ Client-Side Video Processing (FFmpeg WASM)
-❌ Common approach:
-
-Upload raw video
-
-Heavy server-side processing
-
-✅ My approach:
-
-FFmpeg runs entirely in the browser
-
-User trims video before upload
-
-Reduces server load
-
-Faster feedback loop for users
-
-➡️ This is a strong architectural decision for MVP scalability.
-
-4️⃣ Production-Quality UX (Not Just Features)
-I focused heavily on product polish, including:
-
-Recording state indicators (● Recording)
-
-Disabled buttons during async actions
-
-Upload / trim progress feedback
-
-Preventing double submissions
-
-Clean reset flow for new recordings
-
-➡️ These details matter in real products and are often ignored in assignments.
-
-5️⃣ Thoughtful Backend Design (Even Without Cloud)
-API routes structured like production services
-
-File-based persistence designed to be DB-replaceable
-
-Local storage mirrors S3-style object storage
-
-Analytics logic separated cleanly from UI
-
-➡️ The system can be migrated to cloud infra with minimal changes.
-
-🧱 Technical Highlights
-Next.js App Router with clean separation of concerns
-
-MediaRecorder API for in-browser capture
-
-FFmpeg WASM for trimming
-
-Persistent analytics using server-side storage
-
-Cookie-based anonymous identity
-
-Fully typed TypeScript codebase
-
-Clean, responsive Tailwind CSS UI
-
-🚀 Why This Matters
-This project demonstrates that I can:
-
-Build real browser-based video features
-
-Make architectural tradeoffs
-
-Think beyond “it works” → “it scales”
-
-Deliver a polished MVP experience
-
-Handle both frontend and backend concerns
-
-It reflects how I would build an early-stage startup product, not just complete a task.
-
-
-
-👤 Author
-Vinod
+**Vinod**
 Full-Stack Developer
-🔗 Portfolio: https://vinodkumarpeddi.vercel.app
-🔗 GitHub: https://github.com/vinodkumarpeddi
 
-
-
-
-
+🔗 Portfolio: [https://vinodkumarpeddi.vercel.app](https://vinodkumarpeddi.vercel.app)
+🔗 GitHub: [https://github.com/vinodkumarpeddi](https://github.com/vinodkumarpeddi)
 
