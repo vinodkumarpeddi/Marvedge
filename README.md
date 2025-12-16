@@ -7,6 +7,7 @@ Live Demo:
 https://clipclash-marvedge.vercel.app/
 
 🗄️ Storage & Deployment Note (Important)
+
 This project intentionally uses mocked local storage, which is explicitly allowed by the assignment.
 
 During local development, uploaded videos are written to the local filesystem (/public/uploads) to demonstrate the full upload → share → watch flow.
@@ -31,11 +32,15 @@ Migrating to real object storage requires minimal code changes
 In a production environment, this mocked storage layer would be replaced with S3, Cloudflare R2, or similar, without changing frontend or API consumers.
 
 ⚙️ Setup Instructions
+
 1️⃣ Clone the repository
 git clone https://github.com/your-username/clipcast.git
+
 cd clipcast
+
 2️⃣ Install dependencies
 npm install
+
 3️⃣ Run the development server
 npm run dev
 Open:
